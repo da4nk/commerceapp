@@ -31,6 +31,19 @@ def login_view(request):
         return render(request, "auctions/login.html")
 
 
+
+def create(request):
+    
+    if request.method == "POST":
+
+            return render(request, "auctions/create.html")
+    
+    return render(request, "auctions/create.html")
+
+
+
+
+
 def logout_view(request):
     logout(request)
     return HttpResponseRedirect(reverse("index"))
@@ -61,3 +74,4 @@ def register(request):
         return HttpResponseRedirect(reverse("index"))
     else:
         return render(request, "auctions/register.html")
+

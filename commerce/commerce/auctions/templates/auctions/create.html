@@ -1,0 +1,45 @@
+ {% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>New Auction Listing</h2>
+
+    <div  class = "container-fluid">
+        <form action="{% url 'create'%}" method="post">
+            <div class = " d-flex flex-row mb-3 form-group">
+                <label>Title:</label>
+                <input type="text" name="title" placeholder="Title">
+              </div>
+              
+              <div class = "form-group">
+                <label>Description:</label>
+                <input type="text" name="description" placeholder="Description of Item">
+              </div>
+              
+              <div class = "form-group">
+                <label>Price:</label>
+                <input type="text" name="price" placeholder="Starting Offer">
+              </div>
+              
+              <div class = "form-group">
+                <label>Image URL:</label>
+                <input type="text" name="url" placeholder="URL of Image">
+              </div>
+              
+              <div class = "form-select form-select-lg mb-3" aria-label=".form-select-lg example">
+                <select name="category">
+                  <option value="" selected disabled>Select Category</option>
+                  <option value="toys">Toys</option>
+                  <option value="home">Home</option>
+                  <option value="fashion">Fashion</option>
+                  <option value="electronics">Electronics</option>
+                  <option value="kids">Kids</option>
+                  <option value="school">School</option>
+                </select>
+              </div>
+              
+              <!-- Rest of the fields -->
+              
+              <button type="submit" class = "btn btn-primary">Submit</button>
+        </form>
+    </div>
+{% endblock %}
