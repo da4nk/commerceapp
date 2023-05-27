@@ -4,11 +4,16 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import User
+from .models import User, listings
 
 
 def index(request):
-    return render(request, "auctions/index.html")
+    L = listings.objects.all()
+
+    return render(request, "auctions/index.html",
+                  {
+                      "auction": L
+                  })
 
 
 def login_view(request):
@@ -33,12 +38,32 @@ def login_view(request):
 
 
 def create(request):
-    
+    title = request.POST.get('title')
+    description = request.POST.get('description')
+    price = request.POST.get('price')
+    url = request.POST.get('url')
+    category = request.POST.get('category')
     if request.method == "POST":
-
-            return render(request, "auctions/create.html")
+        Listing = listings.objects.create(title=title, description=description,image=url, price=price, category=category)
+        Listing.save()            
+        return HttpResponseRedirect(reverse('index'))
+    
     
     return render(request, "auctions/create.html")
+
+
+
+
+
+
+def auction_listings(request, title):
+    return render(request, "auctions/listing.html")
+
+
+
+
+
+
 
 
 

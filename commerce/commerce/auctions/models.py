@@ -7,12 +7,12 @@ class User(AbstractUser):
 
 
 class listings(models.Model):
-    Title = models.CharField(max_length=64)
-    description = models.CharField(max_length=64)
-    image = models.URLField()
-    start_price = models.DecimalField(max_digits=10, decimal_places=2)
-    start_date = models.DateTimeField()
-    end_date = models.DateTimeField()
+    title = models.CharField(max_length=64)
+    description = models.CharField(max_length=128)
+    image = models.URLField(default = "no image")
+    price = models.DecimalField(default = 0, max_digits=10, decimal_places=2)
+    category = models.CharField(default = "", max_length=20)
+
     def __str__(self):
-        return f"{self.id}, {self.title}, {self.description}, {self.image}, {self.start_price}, {self.start_date}, {self.end_date}"
+        return f"id of the auction: {self.id}, name of the item: {self.title}, description of item: {self.description}, image of item: {self.image}, cost of item: {self.price}, category the item is in: {self.category}"
 
