@@ -3,3 +3,14 @@ body {
 
 }
 
+#titleofitem
+{
+    text-decoration: none;
+}
+#titleofitem:hover
+{
+    text-decoration: underline;
+}
+.error:hover{
+    cursor:pointer;
+}

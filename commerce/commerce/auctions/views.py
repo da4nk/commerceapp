@@ -3,8 +3,9 @@ from django.db import IntegrityError
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
+from django.db import connection
 
-from .models import User, listings
+from .models import User, listings, Bids, Comments
 
 
 def index(request):
@@ -35,7 +36,7 @@ def login_view(request):
     else:
         return render(request, "auctions/login.html")
 
-
+# auction creat section
 
 def create(request):
     title = request.POST.get('title')
@@ -46,6 +47,8 @@ def create(request):
     if request.method == "POST":
         Listing = listings.objects.create(title=title, description=description,image=url, price=price, category=category)
         Listing.save()            
+        auction_listings = listings.objects.get(title=title)
+        auction_listings.owner.add(request.user)
         return HttpResponseRedirect(reverse('index'))
     
     
@@ -55,14 +58,83 @@ def create(request):
 
 
 
+#  listings section
+
 
 def auction_listings(request, title):
-    return render(request, "auctions/listing.html")
+    
+
+ # variables
+    Listings = listings.objects.get(pk=title)
+    users = User.objects.all()
+    offer = request.POST.get('bid')
+    auction_bid = Listings.bids.all()
+    prices = list(auction_bid.values_list('amount', flat=True))
+    prices.sort()
+    close = request.POST.get('close')
+
+    # grabbing data
+    cursor = connection.cursor()
+    cursor.execute('select count(*) from auctions_bids')
+    cursor.fetchall()
+
+    count = Listings.bids.all().count()
+
+    # logic
+    # if request.method == "POST" and 
+    if request.method == "POST" and offer:
+        if float(offer) < Listings.price or float(offer) <= prices[-1]:
+            float(offer)
+            error = "bid unsuccessful offer at higher price"
+            count -= 1
+
+            prices = list(auction_bid.values_list('amount', flat=True))
+            prices.sort()
+
+            return render(request, "auctions/listing.html", {
+                "item": Listings,
+                "users": Listings.owner.all(),
+                "error": error,
+                "count_of_bids": count,
+                "highest_bid": prices[-1]
+            })
+        
 
 
+        else:
+            prices = list(auction_bid.values_list('amount', flat=True))
+            prices.sort()
+
+            bid = Listings.bids.create(amount=float(offer))
+
+            bid.save()
+
+            return HttpResponseRedirect(Listings)
+    if request.method == "POST" and close:
+        Listings = listings.objects.get(pk=close)
+        for winner in users:
+            if winner.bids.amount == prices[-1]:
+                Listings.objects.create(winner = winner.username)
+                print(winner.username)
+                pass
+        return HttpResponseRedirect(reverse('index'))
+    
 
 
+    # If the request method is not POST, or if the count is less than 2
+    prices = list(auction_bid.values_list('amount', flat=True))
 
+    prices.sort()
+
+    highest_bid = prices[-1]
+
+
+    return render(request, "auctions/listing.html", {
+        "item": Listings,
+        "users": Listings.owner.all(),
+        "count_of_bids": count,
+        "highest_bid": highest_bid
+    })
 
 
 
@@ -79,7 +151,7 @@ def register(request):
         username = request.POST["username"]
         email = request.POST["email"]
 
-        # Ensure password matches confirmation
+        # Ensure password matches confirmation                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            
         password = request.POST["password"]
         confirmation = request.POST["confirmation"]
         if password != confirmation:
@@ -100,3 +172,33 @@ def register(request):
     else:
         return render(request, "auctions/register.html")
 
+
+
+#  categories section
+def categories(request):
+    category = request.GET.get('category')
+    listing_category = listings.objects.values_list('category')
+    if not category:
+        return render(request, 'auctions/categories.html',
+                  {
+                      "category": listing_category
+                  })
+    else:
+        return HttpResponseRedirect('cdirect')
+
+def cdirect(request, title):
+    
+    # try selecting auctions based on category
+    selected_listings = listings.objects.filter(category=title).values()
+
+    if not selected_listings:
+        return render(request, "auctions/categories_error.html")        
+
+    # if there is no category present error
+                      
+    return render(request, "auctions/category_list.html",
+                      {
+                          'listings': selected_listings
+                      })
+        
+  

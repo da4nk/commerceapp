@@ -13,10 +13,11 @@
                 
                 <div class="col-md-8 p-5 ml-5">
                     <div class="card-body">
-                    <a href="{% url 'auction_listings' auctions.title %}" class="p-2 card-title">{{ auctions.title }}</a>
+                    <h1 id = "titleofitem"><a href="{% url 'auction_listings' auctions.id %}" class="p-2 card-title">{{ auctions.title }}</a></h1>
                     <h2 class ="p-2 card-title">price: ${{ auctions.price  }}</h2>
                     <h3 class="p-3 card-title"> {{ auctions.description }}
                     </h3>
+                    <h4 class="p-3 card-title" > Created: {{auctions.date}}</h4>
                 </div>
                 </div>
             </div>

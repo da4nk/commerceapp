@@ -1,0 +1,16 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<h1>Select a category: </h1>
+<div class = "" aria-label=".form-select-lg example">
+    <select class =" mt-4 mb-4 form-select", onchange="location = this.value;", name="category">
+      <option value="" selected disabled>Select Category</option>
+      <option value="{% url 'cdirect' 'toys' %}">Toys</option>
+      <option value="{% url 'cdirect' 'home' %}">Home</option>
+      <option value="{% url 'cdirect' 'fashion' %}">Fashion</option>
+      <option value="{% url 'cdirect' 'electronics' %}">Electronics</option>
+      <option value="{% url 'cdirect' 'kids' %}">Kids</option>
+      <option value="{% url 'cdirect' 'school' %}">School</option>
+    </select>
+  </div>
+{% endblock %}
