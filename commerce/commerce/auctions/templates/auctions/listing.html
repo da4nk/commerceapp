@@ -3,7 +3,14 @@
 {% block body %}
 
     <div class="card mb-3">
-        
+        {% if user.is_authenticated %}
+        {% if %}
+        <a href="{% url 'watchlist' item.id %}"><button class = "btn btn-primary">Add to watchlist</button></a>
+        {% elif added == True  %}
+        <a href="{% url 'watchlist' item.id %}"><button class = "btn btn-primary">Remove from Watchlist</button></a>
+
+        {% endif %}
+        {% endif %}
         <img src="{{ item.image }}" style="width: 18rem;" class="card-img-top" alt="...">
         <div class="card-body">
             
@@ -24,22 +31,22 @@
                     <script>
                         const error = document.querySelector('.error');
                         const text = document.querySelector('.text');
-                        error.addEventListener('click', function()
-                        {
-                            error.remove();
-                            text.remove();
-                        });
+                       error.addEventListener('click', function()
+                       {
+                           error.remove();
+                           text.remove();
+                       });
 
-                    </script>
-                    {% endif %}
-                <input class = "btn btn-primary mb-3" type="submit"  value="Place Bid">
-            </form>
-            {% else %}
-            {% for user in users %}
-            {% if request.user.username != user.username %}
-            <a href="\register">sign up to bid</a> 
-            {% endif %}
-            {% endfor %}
+                   </script>
+                   {% endif %}
+               <input class = "btn btn-primary mb-3" type="submit"  value="Place Bid">
+           </form>
+           {% else %}
+           {% for user in users %}
+           {% if request.user.username != user.username %}
+           <a href="\register">sign up to bid</a> 
+           {% endif %}
+           {% endfor %}
             {% endif %}
             {% endfor %}
 
@@ -68,9 +75,19 @@
             <input type="submit" class="btn btn-danger">Close Listing</input>
             </form>
             {% endif %}
+            
+            {% if user.is_authenticated %}
+            <div class="form-floating">
+                {% block content %}
+                <form action="{% url 'auction_listings' item.id %}" method="POST" class="form-group">
+                    <textarea class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px"></textarea>
+                    <label for="floatingTextarea2">Comments</label>
+                    <input type="submit" class="btn btn-success" value="Comment">
+                </form>
+                {% endblock %}
+            </div>
+            {% endif %}
             {% endfor %}
-
-
-        </div>
-
-{% endblock %}
+            </div>
+            {% endblock %}
+            

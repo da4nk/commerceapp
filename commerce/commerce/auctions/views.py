@@ -4,8 +4,10 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 from django.db import connection
+from datetime import datetime
+from django.template import RequestContext
 
-from .models import User, listings, Bids, Comments
+from .models import User, listings, Bids, Comments,closed_listings,WatchList
 
 
 def index(request):
@@ -111,31 +113,64 @@ def auction_listings(request, title):
 
             return HttpResponseRedirect(Listings)
     if request.method == "POST" and close:
-        Listings = listings.objects.get(pk=close)
-        for winner in users:
-            if winner.bids.amount == prices[-1]:
-                Listings.objects.create(winner = winner.username)
-                print(winner.username)
-                pass
-        return HttpResponseRedirect(reverse('index'))
+        Listings = listings.objects.get(pk=close)   
+        highest_bid_obj = Bids.objects.filter(auction = Listings, amount=prices[-1]).order_by('-amount').first()
+        Closed_Listings = closed_listings.objects.all()
+        Closed_Listings.create(title= Listings.title, description=Listings.description, image = Listings.image, price=Listings.price, category=Listings.category,date=Listings.date, winner=highest_bid_obj.user.username)
+        Listings.delete()
+        
+        return HttpResponseRedirect(reverse('closed'))
     
-
+    # if request.method == "POST" and request.GET.get('comment'):
+    #     return render(request. "auctions/")
 
     # If the request method is not POST, or if the count is less than 2
     prices = list(auction_bid.values_list('amount', flat=True))
 
     prices.sort()
+    try: 
+        global highest_bid1
+        highest_bid1 = prices[-1]
+    except IndexError:
+        return render(request, "auctions/listing.html", {
+        "item": Listings,
+        "users": Listings.owner.all(),
+        "count_of_bids": count
+    })
 
-    highest_bid = prices[-1]
-
-
+    
     return render(request, "auctions/listing.html", {
         "item": Listings,
         "users": Listings.owner.all(),
         "count_of_bids": count,
-        "highest_bid": highest_bid
+        "highest_bid": highest_bid1
     })
 
+
+def closed(request):
+    closed_items = closed_listings.objects.all()
+    return render(request, "auctions/closed.html",
+                  {
+                      "auction":closed_items
+                  })
+def old_auction(request, title):
+
+    closed_items = closed_listings.objects.get(pk=title)
+    if request.GET.get('comment'):
+        comment = Comments(content=request.GET.get('comment'), closed_auction=closed_items)
+        comment.save()
+
+        return render(request, "auctions/closed_listing.html",
+                      {
+                          "item": closed_items,
+                          "comment": comments
+                      })
+    comments = Comments.objects.filter(closed_auction=closed_items)
+    return render(request, "auctions/closed_listing.html",
+                  { 
+                      "item": closed_items
+                      ,"comment": comments
+                  })
 
 
 
@@ -201,4 +236,21 @@ def cdirect(request, title):
                           'listings': selected_listings
                       })
         
-  
+
+def watchlist(request, title):
+   added = False
+   if request.user:
+        item = listings.objects.get(pk = title)
+        watchlist = WatchList.objects.create(listing = item, user = request.user)
+        watchlist.save()
+        added = True
+        context = {
+        'added': added
+        }
+        print('syuf')
+
+        request_context = RequestContext(request, context)
+        return HttpResponseRedirect(reverse("auction_listings", args = title), context) 
+   return HttpResponseRedirect(reverse("auction_listings", args = title), context) 
+
+    
