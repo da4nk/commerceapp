@@ -1,0 +1,33 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+<div class="card mb-3">
+    {% if request.user.is_authenticated and item.winner == request.user.username %}
+    <div class="alert alert-warning" role="alert">
+        you won this auction
+    </div>
+    {% endif %}
+    <img src="{{ item.image }}" style="width: 18rem;" class="card-img-top" alt="...">
+    <div class="card-body">
+        
+        <h3 class="card-title ml-3 p-4"> {{ item.title }}</h3>
+        <h4 class="card-text"> {{ item.description }}</h4>
+
+        <h1 class="card-title p-3"> ${{ item.price}}</h1>
+        </p>
+    </div>
+    <div>
+        <h2>Details:</h2>
+            <ul class = "list-group">
+                {% for user in users %}
+                <li class = "list-group-item"> owned by: {{ item.winner }}</li>
+                {% endfor %}
+                <li class= "list-group-item">Category: {{ item.category }}</li>
+                <li class= "list-group-item">winner: {{ item.winner }}</li>
+                
+          
+                
+            </ul>
+      
+        </div>                
+{% endblock %}

@@ -1,0 +1,107 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+
+    <div class="card mb-3">
+        {% for user in users %}
+        {% if user.is_authenticated and user.username != request.user.username %}
+        <form action="{% url 'watchlist' item.id %}" method = "post">
+            {% csrf_token %}
+            {% if not added %}
+        <input type="hidden" name="add" value = "True">
+        <input class = "btn btn-primary"type="submit" value="Add To watchlist">
+               {% elif added %}
+               <input type="hidden" name="add" value = "True">
+               <input class = "btn btn-primary active"type="submit" value="Remove from watchlist">
+               {% endif %}
+        </form>
+        {% endif %}
+        {% endfor %}
+        <img src="{{ item.image }}" style="width: 18rem;" class="card-img-top" alt="...">
+        <div class="card-body">
+            <h3 class="card-title ml-3 p-4"> {{ item.title }}</h3>
+            <h4 class="card-text"> {{ item.desscription }}</h4>
+
+            <h1 class="card-title p-3"> ${{ item.price}}</h1>
+            <p class="card-text">{{ count_of_bids }} bid(s) so far. 
+            </p>
+            {% for user in users %}
+            {% if request.user.is_authenticated and user.username != request.user.username %}
+            <form action="{% url 'auction_listings' item.id %}" method = "post" class="form-group">
+                {% csrf_token %}
+                <input type="number" max = 10000 step="any", required placeholder="Bid" name="bid">
+                {% if error %}
+                    <p class = "text">{{ error }} <span class = "error" aria-hidden="true">&times;</span></p>
+                    
+                    <script>
+                        const error = document.querySelector('.error');
+                        const text = document.querySelector('.text');
+                       error.addEventListener('click', function()
+                       {
+                           error.remove();
+                           text.remove();
+                       });
+
+                   </script>
+                   {% endif %}
+               <input class = "btn btn-primary mb-3" type="submit"  value="Place Bid">
+           </form>
+           {% else %}
+           {% for user in users %}
+           {% if request.user.username != user.username  %}
+           <a href="\register">sign up to bid</a> 
+           {% endif %}
+           {% endfor %}
+            {% endif %}
+            {% endfor %}
+
+        </div>
+            <div>
+                <h2>Details:</h2>
+                    <ul class = "list-group">
+                        {% for user in users %}
+                        <li class = "list-group-item"> Listed by: {{ user }}</li>
+                        {% endfor %}
+                        <li class= "list-group-item">Category: {{ item.category }}</li>
+                        {% if count_of_bids  %}
+                        <li class="list-group-item">Higest Bids: {{ highest_bid }}</li>
+                        {% endif %}
+                        
+                    </ul>
+                    
+                </div>                
+            {% for user in users %}
+
+            {% if user.is_authenticated and user.username == request.user.username %}
+            <form action="{% url 'auction_listings' item.id %}" method = "POST" class="form-group">
+                {% csrf_token %}
+
+            <input value = "{{ item.id }}" type="hidden" name="close">
+            <input type="submit" value = "Close Listing "class="btn btn-danger"></input>
+            </form>
+            {% endif %}
+            
+            {% if request.user.is_authenticated %}
+            <div class="form-floating">
+                {% block content %}
+                <form action="{% url 'comments' item.id %}" method="POST" class="form-group">
+                    {% csrf_token %}
+
+                    <textarea required name = "comment" class="form-control" placeholder="Leave a comment here" id="floatingTextarea2" style="height: 100px"></textarea>
+                    <label for="floatingTextarea2">Comments</label>
+                    <input type="submit" class="btn btn-success" value="Comment">
+                </form>
+                {% endblock %}
+            </div>
+            {% endif %}
+            {% endfor %}
+            <h1 class = "accordion-header">Comments: </h1>
+
+            {% for comment in comments %}
+
+            <ul class="list-group">
+                <li class="list-group-item">{{user.username}}: {{comment.content }}</li>
+            {% endfor %}
+            </div>
+            {% endblock %}
+            

@@ -1,0 +1,26 @@
+{% extends "auctions/layout.html" %}
+
+{% block body %}
+    <h2>Your WatchList </h2>
+
+                <div class=" m-5 p-3 border border-secondary-subtle card-mb-5">
+                    <div class="row g-0">
+                        <div class="col-md-4">
+                    <img src=" {{ auctions.image }} "class="p-5 img-thumbnail" alt="">
+                    </div>
+                    
+                
+                <div class="col-md-8 p-5 ml-5">
+                    <div class="card-body">
+                    <h1 id = "titleofitem"><a href="{% url 'auction_listings' auctions.id %}" class="p-2 card-title">{{ auctions.title }}</a></h1>
+                    <h2 class ="p-2 card-title">price: ${{ auctions.price  }}</h2>
+                    <h3 class="p-3 card-title"> {{ auctions.description }}
+                    </h3>
+                    <h4 class="p-3 card-title" > Created: {{auctions.date}}</h4>
+                </div>
+                </div>
+            </div>
+            </div>
+
+        
+{% endblock %}

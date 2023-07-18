@@ -1,0 +1,16 @@
+body {
+    padding: 10px;
+
+}
+
+#titleofitem
+{
+    text-decoration: none;
+}
+#titleofitem:hover
+{
+    text-decoration: underline;
+}
+.error:hover{
+    cursor:pointer;
+}
