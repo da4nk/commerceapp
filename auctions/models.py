@@ -5,7 +5,7 @@ from django.utils import timezone
 
 
 
-
+#  my models
 
 class listings(models.Model):
     title = models.CharField(max_length=64)

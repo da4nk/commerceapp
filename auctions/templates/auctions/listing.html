@@ -99,9 +99,10 @@
 
             {% for comment in comments %}
 
-            <ul class="list-group">
-                <li class="list-group-item">{{user.username}}: {{comment.content }}</li>
+            <li>
+                {{ user.username }}
+                {{ comment.content }}
+            </li>
             {% endfor %}
             </div>
             {% endblock %}
-            
